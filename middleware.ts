@@ -1,0 +1,38 @@
+import NextAuth from "next-auth"
+import { authConfig } from "@/lib/auth.config"
+
+const { auth } = NextAuth(authConfig)
+
+export default auth((req) => {
+  const { nextUrl } = req
+  const isLoggedIn = !!req.auth
+
+  const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")
+  const isAuthRoute = ["/sign-in", "/signup"].includes(nextUrl.pathname)
+  const isProtectedRoute = nextUrl.pathname.startsWith("/dashboard")
+
+  if (isApiAuthRoute) return null
+
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return Response.redirect(new URL("/dashboard", nextUrl))
+    }
+    return null
+  }
+
+  if (!isLoggedIn && isProtectedRoute) {
+    let callbackUrl = nextUrl.pathname
+    if (nextUrl.search) {
+      callbackUrl += nextUrl.search
+    }
+    
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl)
+    return Response.redirect(new URL(`/sign-in?callbackUrl=${encodedCallbackUrl}`, nextUrl))
+  }
+
+  return null
+})
+
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+}
