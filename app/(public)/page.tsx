@@ -8,7 +8,7 @@ import {
   ArrowRight, Check, Zap, Users, BarChart3, Clock, Play, Brain,
   MessageSquare, Shield, Globe, Sparkles, TrendingUp, Target,
   Layers, MousePointer2, ChevronDown, Rocket, Search, Activity,
-  Quote, ShieldCheck
+  Quote, ShieldCheck, Mail
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRef, useState, useEffect } from "react"
@@ -1681,16 +1681,25 @@ export default function LandingPage() {
                 <li><Link href="/about" className="hover:text-[#638de9] transition-colors">About Us</Link></li>
                 <li><Link href="/blog" className="hover:text-[#638de9] transition-colors">Blog</Link></li>
                 <li><Link href="/careers" className="hover:text-[#638de9] transition-colors">Careers</Link></li>
-                <li><Link href="/contact" className="hover:text-[#638de9] transition-colors">Contact</Link></li>
+                <li><Link href="https://mail.google.com/mail/?view=cm&fs=1&to=rutwiksharma.1@gmail.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#638de9] transition-colors">Contact</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-bold mb-6">Connect</h4>
               <div className="flex gap-4">
-                {["Twitter", "LinkedIn", "GitHub"].map(social => (
-                  <Link key={social} href="#" className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center hover:bg-[#638de9]/10 hover:border-[#638de9]/30 transition-all">
-                    <span className="sr-only">{social}</span>
-                    <div className="w-4 h-4 bg-white/20 rounded-sm" />
+                {[
+                  { name: "Gmail", href: "https://mail.google.com/mail/?view=cm&fs=1&to=rutwiksharma.1@gmail.com", isEmail: true },
+                  { name: "Twitter", href: "#", isEmail: false },
+                  { name: "LinkedIn", href: "#", isEmail: false },
+                  { name: "GitHub", href: "#", isEmail: false }
+                ].map(social => (
+                  <Link key={social.name} href={social.href} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center hover:bg-[#638de9]/10 hover:border-[#638de9]/30 transition-all">
+                    <span className="sr-only">{social.name}</span>
+                    {social.isEmail ? (
+                      <Mail className="w-4 h-4 text-white/60 hover:text-white transition-colors" />
+                    ) : (
+                      <div className="w-4 h-4 bg-white/20 rounded-sm" />
+                    )}
                   </Link>
                 ))}
               </div>
@@ -1698,7 +1707,7 @@ export default function LandingPage() {
           </div>
           <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-white/20 text-[10px] font-black uppercase tracking-widest">
-              © 2024 ReplyFlow AI. All rights reserved.
+              © 2024 ReplyFlow AI. All rights reserved. • Made by Rutwik Vadali
             </div>
             <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-white/20">
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
