@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getSession } from "@/lib/auth-utils"
+import { getSession, getUserPrimaryWorkspace } from "@/lib/auth-utils"
 import { db } from "@/lib/db"
 
 export async function GET() {
@@ -9,10 +9,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const workspaceUser = await db.workspaceUser.findFirst({
-      where: { userId: session.user.id as string },
-      include: { workspace: true },
-    })
+    const workspaceUser = await getUserPrimaryWorkspace(session.user.id as string)
 
     if (!workspaceUser) {
       return NextResponse.json({ name: "My Workspace", plan: "FREE" })

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { getSession, getUserWorkspaceId, canAccessWorkspace } from "@/lib/auth-utils";
+import { getSession, getUserWorkspaceId, canAccessWorkspace, getUserPrimaryWorkspace } from "@/lib/auth-utils";
 
 export async function getDashboardStats() {
   try {
@@ -101,10 +101,7 @@ export async function getWorkspaceAnalytics(requestedWorkspaceId?: string, dateF
 
     // Always resolve from session if not provided or empty
     if (!workspaceId) {
-      const userWorkspace = await db.workspaceUser.findFirst({
-        where: { userId: session.user.id as string },
-        orderBy: { createdAt: "asc" },
-      })
+      const userWorkspace = await getUserPrimaryWorkspace(session.user.id as string)
       if (!userWorkspace) {
         // Return empty analytics rather than throwing, for new users
         return {

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/auth-utils";
+import { getSession, getUserPrimaryWorkspace } from "@/lib/auth-utils";
 import { createConversationSchema, assignConversationSchema } from "@/lib/validation";
 import { logActivity } from "./activity";
 import { ACTION_TYPES } from "@/lib/constants";
@@ -17,14 +17,7 @@ export async function getUserConversations(filters?: any) {
     if (!session?.user) throw new Error("Unauthorized");
 
     // Get user's first workspace (order by ID since no createdAt field)
-    const workspace = await db.workspaceUser.findFirst({
-      where: {
-        userId: session.user.id as string,
-      },
-      include: {
-        workspace: true,
-      },
-    });
+    const workspace = await getUserPrimaryWorkspace(session.user.id as string);
 
     if (!workspace) throw new Error("No workspace found");
 

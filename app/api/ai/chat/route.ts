@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { generateAssistantReply } from "@/lib/ai";
+import { getUserPrimaryWorkspace } from "@/lib/auth-utils";
 
 /**
  * POST /api/ai/chat
@@ -34,6 +35,9 @@ export async function POST(request: NextRequest) {
     let pendingFollowUps: any[] = [];
 
     if (session?.user?.id) {
+      // Ensure workspace is provisioned first
+      await getUserPrimaryWorkspace(session.user.id);
+
       // Fetch workspace context for logged-in users
       workspaceUser = await db.workspaceUser.findFirst({
         where: { userId: session.user.id },

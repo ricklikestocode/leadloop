@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { getUserPrimaryWorkspace } from "@/lib/auth-utils"
 
 export async function GET() {
   try {
@@ -9,9 +10,7 @@ export async function GET() {
       return NextResponse.json({ count: 0 })
     }
 
-    const workspaceUser = await db.workspaceUser.findFirst({
-      where: { userId: session.user.id },
-    })
+    const workspaceUser = await getUserPrimaryWorkspace(session.user.id)
 
     if (!workspaceUser) {
       return NextResponse.json({ count: 0 })

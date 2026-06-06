@@ -27,10 +27,39 @@ export function hasPermission(role: string, permission: string) {
 }
 
 export async function getUserPrimaryWorkspace(userId: string) {
-  const userWorkspace = await db.workspaceUser.findFirst({
+  let userWorkspace = await db.workspaceUser.findFirst({
     where: { userId },
     include: { workspace: true },
   })
+  
+  if (!userWorkspace) {
+    // Check if user exists
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    })
+    
+    if (user) {
+      // Create a default workspace for this user
+      const name = user.name || user.email?.split("@")[0] || "User"
+      const workspace = await db.workspace.create({
+        data: {
+          name: `${name}'s Workspace`,
+          users: {
+            create: {
+              userId: user.id,
+              role: "ADMIN",
+            },
+          },
+        },
+      })
+      
+      // Fetch the created userWorkspace
+      userWorkspace = await db.workspaceUser.findFirst({
+        where: { userId, workspaceId: workspace.id },
+        include: { workspace: true },
+      })
+    }
+  }
   
   return userWorkspace
 }
