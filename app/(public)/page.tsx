@@ -78,7 +78,7 @@ function FeatureCard({ icon: Icon, title, desc, delay, details }: { icon: any; t
       transition={{ duration: 0.5, delay }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative p-8 rounded-[2rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-[#638de9]/30 transition-all duration-500 overflow-hidden"
+      className="group relative p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-[#638de9]/30 transition-all duration-500 overflow-hidden h-full min-h-[380px] md:min-h-0 flex flex-col justify-between"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-[#638de9]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[2rem]" />
       <div className="relative z-10">
@@ -127,12 +127,12 @@ function InteractiveCalculator() {
   if (!mounted) return null
 
   return (
-    <section className="py-32 px-6">
+    <section className="py-20 md:py-32 px-6">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="max-w-5xl mx-auto p-12 rounded-[3.5rem] border border-[#638de9]/20 bg-gradient-to-br from-white/[0.03] to-transparent bg-white/[0.02] relative overflow-hidden shadow-[0_0_100px_-20px_rgba(99,141,233,0.1)]"
+        className="max-w-5xl mx-auto p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] border border-[#638de9]/20 bg-gradient-to-br from-white/[0.03] to-transparent bg-white/[0.02] relative overflow-hidden shadow-[0_0_100px_-20px_rgba(99,141,233,0.1)]"
       >
         <div className="absolute top-0 right-0 p-12 opacity-10">
           <TrendingUp className="w-32 h-32 text-[#638de9]" />
@@ -141,7 +141,7 @@ function InteractiveCalculator() {
         <div className="relative z-10">
           <div className="mb-12">
             <Badge className="bg-[#638de9]/10 text-[#638de9] mb-4">Revenue Logic Engine</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">How much revenue are you losing?</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight text-white">How much revenue are you losing?</h2>
             <p className="text-white/40 font-medium">Adjust the sliders to simulate your current pipeline leakage.</p>
           </div>
 
@@ -186,7 +186,7 @@ function InteractiveCalculator() {
 
             <div className="grid grid-cols-1 gap-6">
               <motion.div
-                className="p-8 rounded-[2.5rem] bg-red-500/5 border border-red-500/10"
+                className="p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] bg-red-500/5 border border-red-500/10"
                 animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 4, repeat: Infinity }}
               >
@@ -196,7 +196,7 @@ function InteractiveCalculator() {
               </motion.div>
 
               <motion.div
-                className="p-8 rounded-[2.5rem] bg-[#638de9] text-black shadow-2xl shadow-[#638de9]/20"
+                className="p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] bg-[#638de9] text-black shadow-2xl shadow-[#638de9]/20"
                 whileHover={{ y: -5 }}
               >
                 <div className="flex items-center justify-between mb-4">
@@ -625,9 +625,9 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="relative group h-[500px]">
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#638de9] to-[#8e5cdb] rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-                <div className="relative h-full rounded-[3rem] bg-[#0a0a0a] border border-white/10 p-12 overflow-hidden flex flex-col">
+              <div className="relative group h-auto md:h-[500px]">
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#638de9] to-[#8e5cdb] rounded-[2rem] md:rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                <div className="relative h-full min-h-[400px] md:min-h-0 rounded-[2rem] md:rounded-[3rem] bg-[#0a0a0a] border border-white/10 p-6 md:p-12 overflow-hidden flex flex-col">
                   <div className="flex items-center justify-between mb-8">
                     <div className="text-xs font-bold text-white/30 uppercase tracking-widest">Live Lead Decay Monitor</div>
                     <div className="flex gap-1">
@@ -666,7 +666,7 @@ export default function LandingPage() {
         </ScrollReveal>
       </section>
 
-      <section id="intelligence" className="py-32 px-6 bg-white/[0.01]">
+      <section id="intelligence" className="py-20 md:py-32 px-6 bg-white/[0.01] scroll-mt-24">
         <ScrollReveal>
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-24">
@@ -678,9 +678,9 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
-              <div className="md:col-span-4 h-[450px]">
-                <div className="w-full h-full p-1 rounded-[2.8rem] bg-gradient-to-br from-[#638de9]/20 to-transparent border border-white/5">
-                  <div className="w-full h-full rounded-[2.7rem] bg-[#020202] overflow-hidden relative group">
+              <div className="md:col-span-4 h-auto md:h-[450px]">
+                <div className="w-full h-full min-h-[400px] md:min-h-0 p-1 rounded-[2rem] md:rounded-[2.8rem] bg-gradient-to-br from-[#638de9]/20 to-transparent border border-white/5">
+                  <div className="w-full h-full min-h-[390px] md:min-h-0 rounded-[1.9rem] md:rounded-[2.7rem] bg-[#020202] overflow-hidden relative group">
                     <AIScoringSimulation />
                     <div className="absolute top-8 right-8 max-w-[200px] text-right">
                       <h3 className="text-2xl font-bold mb-2">Neural Scoring</h3>
@@ -692,7 +692,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="md:col-span-2 h-[450px]">
+              <div className="md:col-span-2 h-auto md:h-[450px]">
                 <FeatureCard
                   icon={Target}
                   title="Hyper-Targeted"
@@ -702,7 +702,7 @@ export default function LandingPage() {
                 />
               </div>
 
-              <div className="md:col-span-2 h-[450px]">
+              <div className="md:col-span-2 h-auto md:h-[450px]">
                 <FeatureCard
                   icon={Globe}
                   title="Global Sync"
@@ -712,10 +712,10 @@ export default function LandingPage() {
                 />
               </div>
 
-              <div className="md:col-span-4 h-[450px]">
-                <div className="w-full h-full p-10 rounded-[2.5rem] border border-white/5 bg-gradient-to-bl from-white/[0.03] to-transparent relative overflow-hidden group hover:border-[#638de9]/20 transition-all duration-500">
+              <div className="md:col-span-4 h-auto md:h-[450px]">
+                <div className="w-full h-full min-h-[450px] md:min-h-0 p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/5 bg-gradient-to-bl from-white/[0.03] to-transparent relative overflow-hidden group hover:border-[#638de9]/20 transition-all duration-500">
                   <div className="relative z-10 flex flex-col h-full">
-                    <div className="flex justify-between items-start mb-8">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                       <div>
                         <h3 className="text-3xl font-bold mb-2">Adaptive Brand Voice</h3>
                         <p className="text-white/40 text-sm leading-relaxed max-w-sm">
@@ -723,7 +723,7 @@ export default function LandingPage() {
                           Switch between tones to see the neural shift.
                         </p>
                       </div>
-                      <div className="flex bg-white/5 p-1 rounded-xl border border-white/5">
+                      <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 flex-shrink-0">
                         {['Professional', 'Aggressive'].map(t => (
                           <button
                             key={t}
@@ -766,10 +766,10 @@ export default function LandingPage() {
         </ScrollReveal>
       </section>
 
-      <section id="features" className="py-32 px-6">
+      <section id="features" className="py-20 md:py-32 px-6 scroll-mt-24">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
-            <div className="space-y-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+            <div className="space-y-12 lg:space-y-24">
               <div>
                 <Badge className="bg-[#638de9]/10 text-[#638de9] mb-6 px-4 py-1">The Architecture</Badge>
                 <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 text-white">How it works.</h2>
@@ -933,12 +933,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="space-y-24">
+            <div className="space-y-12 lg:space-y-24">
               <motion.div
                 whileInView={{ y: [40, 0], opacity: [0, 1] }}
-                className="p-1 border border-white/10 rounded-[3rem] bg-[#0a0a0a] shadow-2xl"
+                className="p-1 border border-white/10 rounded-[2rem] md:rounded-[3rem] bg-[#0a0a0a] shadow-2xl"
               >
-                <div className="aspect-[4/5] rounded-[2.8rem] bg-gradient-to-b from-white/[0.05] to-transparent p-12 flex flex-col items-center justify-center text-center">
+                <div className="aspect-auto min-h-[460px] md:aspect-[4/5] md:min-h-0 rounded-[1.9rem] md:rounded-[2.8rem] bg-gradient-to-b from-white/[0.05] to-transparent p-6 md:p-12 flex flex-col items-center justify-center text-center">
                   <div className="w-24 h-24 rounded-3xl bg-[#638de9]/10 flex items-center justify-center mb-10 group">
                     <Rocket className="w-10 h-10 text-[#638de9] group-hover:translate-y-[-5px] transition-transform" />
                   </div>
@@ -956,9 +956,9 @@ export default function LandingPage() {
 
               <motion.div
                 whileInView={{ y: [40, 0], opacity: [0, 1] }}
-                className="p-1 border border-white/10 rounded-[3rem] bg-[#0a0a0a] shadow-2xl group hover:border-purple-500/30 transition-all duration-500"
+                className="p-1 border border-white/10 rounded-[2rem] md:rounded-[3rem] bg-[#0a0a0a] shadow-2xl group hover:border-purple-500/30 transition-all duration-500"
               >
-                <div className="aspect-[4/5] rounded-[2.8rem] bg-gradient-to-b from-white/[0.05] to-transparent p-12 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                <div className="aspect-auto min-h-[460px] md:aspect-[4/5] md:min-h-0 rounded-[1.9rem] md:rounded-[2.8rem] bg-gradient-to-b from-white/[0.05] to-transparent p-6 md:p-12 flex flex-col items-center justify-center text-center relative overflow-hidden">
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                     {[...Array(12)].map((_, i) => (
                       <motion.div
@@ -1019,9 +1019,9 @@ export default function LandingPage() {
 
               <motion.div
                 whileInView={{ y: [40, 0], opacity: [0, 1] }}
-                className="p-1 border border-white/10 rounded-[3rem] bg-[#0a0a0a] shadow-2xl group hover:border-[#638de9]/30 transition-all duration-500"
+                className="p-1 border border-white/10 rounded-[2rem] md:rounded-[3rem] bg-[#0a0a0a] shadow-2xl group hover:border-[#638de9]/30 transition-all duration-500"
               >
-                <div className="aspect-[4/5] rounded-[2.8rem] bg-gradient-to-b from-white/[0.05] to-transparent p-12 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                <div className="aspect-auto min-h-[460px] md:aspect-[4/5] md:min-h-0 rounded-[1.9rem] md:rounded-[2.8rem] bg-gradient-to-b from-white/[0.05] to-transparent p-6 md:p-12 flex flex-col items-center justify-center text-center relative overflow-hidden group">
                   <div className="w-24 h-24 rounded-3xl bg-[#638de9]/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-all duration-500 relative">
                     <div className="absolute inset-0 bg-[#638de9]/20 rounded-3xl blur-2xl animate-pulse" />
                     <MessageSquare className="w-10 h-10 text-[#638de9] relative z-10" />
@@ -1071,9 +1071,9 @@ export default function LandingPage() {
 
               <motion.div
                 whileInView={{ y: [40, 0], opacity: [0, 1] }}
-                className="p-1 border border-white/10 rounded-[3rem] bg-[#0a0a0a] shadow-2xl group hover:border-[#638de9]/30 transition-all duration-500"
+                className="p-1 border border-white/10 rounded-[2rem] md:rounded-[3rem] bg-[#0a0a0a] shadow-2xl group hover:border-[#638de9]/30 transition-all duration-500"
               >
-                <div className="aspect-[4/5] rounded-[2.8rem] bg-gradient-to-b from-white/[0.05] to-transparent p-12 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                <div className="aspect-auto min-h-[460px] md:aspect-[4/5] md:min-h-0 rounded-[1.9rem] md:rounded-[2.8rem] bg-gradient-to-b from-white/[0.05] to-transparent p-6 md:p-12 flex flex-col items-center justify-center text-center relative overflow-hidden group">
                   <div className="w-24 h-24 rounded-3xl bg-green-500/10 flex items-center justify-center mb-10 group-hover:rotate-12 transition-all duration-500 relative">
                     <div className="absolute inset-0 bg-green-500/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <ShieldCheck className="w-10 h-10 text-green-500 relative z-10" />
@@ -1189,7 +1189,7 @@ export default function LandingPage() {
         </ScrollReveal>
       </section>
 
-      <section className="py-48 bg-white/[0.02] overflow-hidden">
+      <section className="py-20 md:py-48 bg-white/[0.02] overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 mb-24 flex flex-col md:flex-row justify-between items-end gap-8">
           <div>
             <Badge className="bg-[#638de9]/10 text-[#638de9] mb-6">Neural Pipeline</Badge>
@@ -1313,11 +1313,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-48 px-6 bg-black relative overflow-hidden">
+      <section className="py-20 md:py-48 px-6 bg-black relative overflow-hidden">
         <ScrollReveal>
           <div className="max-w-7xl mx-auto relative z-10 text-center mb-24">
             <Badge className="bg-[#638de9]/10 text-[#638de9] mb-6">Global Network</Badge>
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-8">
+            <h2 className="text-4xl md:text-7xl font-bold tracking-tight mb-8">
               Live revenue <br />
               <span className="text-[#638de9]">intercepts.</span>
             </h2>
@@ -1327,11 +1327,11 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="max-w-5xl mx-auto aspect-[16/9] rounded-[3rem] border border-white/5 bg-white/[0.02] relative overflow-hidden group">
+          <div className="max-w-5xl mx-auto aspect-auto min-h-[350px] md:aspect-[16/9] md:min-h-0 rounded-[2rem] md:rounded-[3rem] border border-white/5 bg-white/[0.02] relative overflow-hidden group">
             <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
 
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative w-full h-full p-20 opacity-40">
+              <div className="relative w-full h-full p-4 md:p-20 opacity-40">
                 {/* Simulated Map points */}
                 {[
                   { top: "30%", left: "20%", name: "San Francisco", recovery: "$12,400" },
@@ -1359,18 +1359,18 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="absolute bottom-8 left-8 p-6 rounded-2xl bg-black/40 bg-white/[0.02] border border-white/10">
+            <div className="absolute bottom-4 left-4 right-4 md:right-auto md:bottom-8 md:left-8 p-4 md:p-6 rounded-xl md:rounded-2xl bg-black/60 md:bg-black/40 bg-white/[0.02] border border-white/10">
               <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">System Throughput</div>
-              <div className="text-2xl font-bold flex items-center gap-3">
+              <div className="text-xl md:text-2xl font-bold flex flex-wrap items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#638de9] animate-pulse" />
-                1,242 <span className="text-white/20 text-sm">active intercepts/min</span>
+                1,242 <span className="text-white/20 text-xs md:text-sm font-medium">active intercepts/min</span>
               </div>
             </div>
           </div>
         </ScrollReveal>
       </section>
 
-      <section id="pricing" className="relative py-48 px-6">
+      <section id="pricing" className="relative py-20 md:py-48 px-6 scroll-mt-24">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24">
             <Badge className="bg-[#638de9]/10 text-[#638de9] mb-4">Pricing</Badge>
@@ -1461,7 +1461,7 @@ export default function LandingPage() {
       </section>
 
 
-      <section className="py-24 px-6 relative overflow-hidden bg-[#020202]">
+      <section className="py-20 md:py-48 px-6 relative overflow-hidden bg-[#020202]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-32">
             <Badge className="bg-[#638de9]/10 text-[#638de9] mb-6">The Journey</Badge>
@@ -1474,7 +1474,7 @@ export default function LandingPage() {
           <div className="relative">
             <div className="absolute left-[50%] top-0 bottom-0 w-[1px] bg-white/5 hidden md:block" />
 
-            <div className="space-y-32">
+            <div className="space-y-16 md:space-y-32">
               {[
                 {
                   day: "Day 01",
@@ -1520,7 +1520,7 @@ export default function LandingPage() {
                       {milestone.fact}
                     </div>
                   </div>
-                  <div className="relative z-10 flex items-center justify-center">
+                  <div className="relative z-10 hidden md:flex items-center justify-center">
                     <div className="w-12 h-12 rounded-full bg-[#0a0a0a] border border-[#638de9]/50 flex items-center justify-center shadow-[0_0_20px_rgba(99,141,233,0.2)]">
                       <div className="w-3 h-3 bg-[#638de9] rounded-full" />
                     </div>
@@ -1533,13 +1533,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-24 px-6 bg-white/[0.02]">
+      <section className="py-20 md:py-32 px-6 bg-white/[0.02]">
         <ScrollReveal>
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
               <div>
                 <Badge className="bg-[#638de9]/10 text-[#638de9] mb-6 px-4 py-1">Success Stories</Badge>
-                <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-8">What teams are <br /><span className="text-[#638de9]">saying.</span></h2>
+                <h2 className="text-4xl md:text-7xl font-bold tracking-tight mb-8">What teams are <br /><span className="text-[#638de9]">saying.</span></h2>
                 <div className="flex gap-4 mb-12">
                   <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
                     <div className="text-3xl font-bold text-white mb-1">4.9/5</div>
@@ -1570,7 +1570,7 @@ export default function LandingPage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true, margin: "200px" }}
                     transition={{ delay: i * 0.2 }}
-                    className="p-10 rounded-[2.5rem] bg-black border border-white/5 relative overflow-hidden group"
+                    className="p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] bg-black border border-white/5 relative overflow-hidden group"
                   >
                     <div className="relative z-10">
                       <p className="text-xl font-medium text-white/80 italic mb-8 leading-relaxed">“{t.quote}”</p>
@@ -1588,7 +1588,7 @@ export default function LandingPage() {
         </ScrollReveal>
       </section>
 
-      <section className="py-32 px-6 bg-white/[0.01]">
+      <section className="py-20 md:py-32 px-6 bg-white/[0.01]">
         <ScrollReveal>
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-20">
@@ -1616,7 +1616,7 @@ export default function LandingPage() {
         </ScrollReveal>
       </section>
 
-      <section className="relative py-64 px-6 text-center overflow-hidden">
+      <section className="relative py-24 md:py-64 px-6 text-center overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#638de9]/10 blur-[150px] rounded-full pointer-events-none" />
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -1625,7 +1625,7 @@ export default function LandingPage() {
           transition={{ duration: 0.8 }}
           className="relative z-10"
         >
-          <h2 className="text-6xl md:text-[9rem] font-black tracking-tighter leading-none mb-12">
+          <h2 className="text-5xl md:text-[9rem] font-black tracking-tighter leading-none mb-12">
             Ready to <br />
             <span className="text-[#638de9]">dominate?</span>
           </h2>
