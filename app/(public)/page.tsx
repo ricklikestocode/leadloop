@@ -437,8 +437,18 @@ export default function LandingPage() {
   const [tone, setTone] = useState<'Professional' | 'Aggressive'>('Professional')
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768)
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   useEffect(() => {
+    if (isMobile) return
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e
       mouseX.set(clientX)
@@ -446,7 +456,7 @@ export default function LandingPage() {
     }
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  }, [isMobile])
 
   const orbX = useTransform(mouseX, [0, 1920], [-20, 20])
   const orbY = useTransform(mouseY, [0, 1080], [-20, 20])
@@ -468,12 +478,12 @@ export default function LandingPage() {
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
         <motion.div
-          style={{ x: orbX, y: orbY }}
-          className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#638de9]/10 blur-[150px] rounded-full"
+          style={{ x: isMobile ? 0 : orbX, y: isMobile ? 0 : orbY }}
+          className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#638de9]/10 blur-[50px] md:blur-[150px] rounded-full"
         />
         <motion.div
-          style={{ x: orbXInverse, y: orbYInverse }}
-          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#8e5cdb]/10 blur-[150px] rounded-full"
+          style={{ x: isMobile ? 0 : orbXInverse, y: isMobile ? 0 : orbYInverse }}
+          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#8e5cdb]/10 blur-[50px] md:blur-[150px] rounded-full"
         />
       </div>
 
@@ -828,8 +838,8 @@ export default function LandingPage() {
                     {[...Array(15)].map((_, i) => (
                       <motion.circle
                         key={`node-${i}`}
-                        cx={20 + Math.random() * 360}
-                        cy={20 + Math.random() * 360}
+                        cx={20 + ((i * 73) % 360)}
+                        cy={20 + ((i * 127) % 360)}
                         r="1.2"
                         fill="#638de9"
                         animate={{
@@ -837,9 +847,9 @@ export default function LandingPage() {
                           scale: [1, 1.8, 1],
                         }}
                         transition={{
-                          duration: 3 + Math.random() * 3,
+                          duration: 3 + (i % 3),
                           repeat: Infinity,
-                          delay: Math.random() * 2
+                          delay: (i * 0.2) % 2
                         }}
                         filter="url(#glow)"
                       />
@@ -847,10 +857,10 @@ export default function LandingPage() {
                     {[...Array(12)].map((_, i) => (
                       <motion.line
                         key={`edge-${i}`}
-                        x1={20 + Math.random() * 360}
-                        y1={20 + Math.random() * 360}
-                        x2={20 + Math.random() * 360}
-                        y2={20 + Math.random() * 360}
+                        x1={20 + ((i * 89) % 360)}
+                        y1={20 + ((i * 139) % 360)}
+                        x2={20 + ((i * 197) % 360)}
+                        y2={20 + ((i * 47) % 360)}
                         stroke="#638de9"
                         strokeWidth="0.5"
                         strokeDasharray="4 4"
@@ -860,9 +870,9 @@ export default function LandingPage() {
                           opacity: [0, 0.4, 0]
                         }}
                         transition={{
-                          duration: 6 + Math.random() * 6,
+                          duration: 6 + (i % 6),
                           repeat: Infinity,
-                          delay: Math.random() * 5
+                          delay: (i * 0.4) % 5
                         }}
                       />
                     ))}
@@ -960,7 +970,7 @@ export default function LandingPage() {
                           x: Math.sin(i) * 20
                         }}
                         transition={{
-                          duration: 3 + Math.random() * 2,
+                          duration: 3 + (i % 2),
                           delay: i * 0.15,
                           repeat: Infinity,
                           ease: "linear"
@@ -968,7 +978,7 @@ export default function LandingPage() {
                         className="absolute text-[7px] font-mono text-purple-500/30 whitespace-nowrap"
                         style={{ left: `${(i / 12) * 100}%` }}
                       >
-                        {["0x8F", "EMBED", "SYNC", "MEM", "VECT", "GRID", "NODE"][i % 7]}::{Math.random().toString(16).substring(2, 6)}
+                        {["0x8F", "EMBED", "SYNC", "MEM", "VECT", "GRID", "NODE"][i % 7]}::${((i * 987) % 4096).toString(16).padStart(4, "0")}
                       </motion.div>
                     ))}
                   </div>

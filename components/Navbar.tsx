@@ -19,13 +19,15 @@ export function Navbar() {
   ]
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (href.startsWith("#") && pathname === "/") {
-      e.preventDefault()
-      const element = document.querySelector(href)
-      if (element) {
-        element.scrollIntoView({ behavior: "instant" })
+    if (href.startsWith("#")) {
+      if (pathname === "/") {
+        e.preventDefault()
+        const element = document.querySelector(href)
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" })
+        }
+        setIsOpen(false)
       }
-      setIsOpen(false)
     }
   }
 
@@ -57,14 +59,14 @@ export function Navbar() {
                 {item.label}
               </Link>
             ) : (
-              <a 
+              <Link
                 key={item.href} 
-                href={item.href} 
+                href={pathname === "/" ? item.href : `/${item.href}`} 
                 onClick={(e) => handleScroll(e, item.href)}
                 className="text-xs font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
               >
                 {item.label}
-              </a>
+              </Link>
             )
           ))}
         </div>
@@ -104,14 +106,14 @@ export function Navbar() {
                 {item.label}
               </Link>
             ) : (
-              <a 
+              <Link
                 key={item.href} 
-                href={item.href} 
+                href={pathname === "/" ? item.href : `/${item.href}`} 
                 onClick={(e) => handleScroll(e, item.href)}
                 className="block text-sm font-semibold uppercase tracking-widest text-white/50"
               >
                 {item.label}
-              </a>
+              </Link>
             )
           ))}
           <div className="pt-4 border-t border-white/[0.05] flex flex-col gap-4">
