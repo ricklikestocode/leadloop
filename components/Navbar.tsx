@@ -75,7 +75,7 @@ export function Navbar() {
           <Link href="/sign-in" className="text-sm font-semibold text-white/70 hover:text-white transition-colors hidden sm:block">
             Sign In
           </Link>
-          <Button className="bg-white text-black hover:bg-white/90 rounded-full px-6 h-10 text-xs font-bold" asChild>
+          <Button className="bg-white bg-none text-black hover:bg-white/90 rounded-full px-6 h-10 text-xs font-bold hidden sm:flex" asChild>
             <Link href="/signup">
               Get Started
             </Link>
@@ -118,7 +118,7 @@ export function Navbar() {
           ))}
           <div className="pt-4 border-t border-white/[0.05] flex flex-col gap-4">
             <Link href="/sign-in" className="text-sm font-semibold text-white/70">Sign In</Link>
-            <Button className="bg-white text-black w-full rounded-full h-12 font-bold" asChild>
+            <Button className="bg-white bg-none text-black w-full rounded-full h-12 font-bold" asChild>
               <Link href="/signup">Get Started</Link>
             </Button>
           </div>
