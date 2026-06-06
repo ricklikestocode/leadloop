@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { BarChart3, Users, Clock, Settings, LogOut, Zap, PlayCircle, Share2, CreditCard } from "lucide-react"
+import { BarChart3, Users, Clock, Settings, LogOut, Zap, PlayCircle, Share2, CreditCard, Cpu } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
@@ -42,6 +42,7 @@ export function Sidebar() {
     { href: "/dashboard", label: "Overview", icon: BarChart3, active: isActive("/dashboard") && pathname === "/dashboard" },
     { href: "/dashboard/chats", label: "Messages", icon: Zap, active: isActive("/dashboard/chats") },
     { href: "/dashboard/leads", label: "Lead Pipeline", icon: Users, active: isActive("/dashboard/leads") },
+    { href: "/dashboard/automation", label: "Automation Center", icon: Cpu, active: isActive("/dashboard/automation") },
     { href: "/dashboard/follow-ups", label: "Smart Tasks", icon: Clock, active: isActive("/dashboard/follow-ups") },
     { href: "/dashboard/billing", label: "Billing & Plans", icon: CreditCard, active: isActive("/dashboard/billing") },
     { href: "/dashboard/settings", label: "Account Settings", icon: Settings, active: isActive("/dashboard/settings") },

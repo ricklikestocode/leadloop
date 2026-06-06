@@ -185,7 +185,12 @@ export default function LeadDetailPage({ params }: LeadDetailPageProps) {
                 ...lead,
                 summary: data.summary,
                 nextAction: data.nextAction,
-                leadScore: data.score
+                leadScore: data.score,
+                intent: data.intent,
+                confidenceScore: data.confidenceScore,
+                conversionProbability: data.conversionProbability,
+                suggestedActions: data.suggestedActions,
+                automationRun: data.automationRun
               });
             }} 
           />

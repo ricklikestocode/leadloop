@@ -105,8 +105,26 @@ export function ChatUI({
 
   useEffect(() => {
     fetchMessages()
-    const interval = setInterval(fetchMessages, 4000)
-    return () => clearInterval(interval)
+    let scrollTimeout: NodeJS.Timeout | null = null
+    let isScrolling = false
+    
+    const handleScroll = () => {
+      isScrolling = true
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(() => { isScrolling = false }, 2000)
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    
+    const interval = setInterval(() => {
+      if (!isScrolling) fetchMessages()
+    }, 4000)
+    
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('scroll', handleScroll)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+    }
   }, [conversationId])
 
   const handleSend = async () => {

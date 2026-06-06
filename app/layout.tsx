@@ -5,7 +5,6 @@ import { SessionProvider } from "next-auth/react"
 import { auth } from "@/lib/auth"
 import { FloatingAIChat } from "@/components/FloatingAIChat"
 import { Toaster } from "sonner"
-import SmoothScroll from "@/components/SmoothScroll"
 
 const plusJakartaSans = Plus_Jakarta_Sans({ 
   subsets: ["latin"],
@@ -66,11 +65,9 @@ export default async function RootLayout({
       </head>
       <body suppressHydrationWarning className="font-sans bg-[#030303] text-white antialiased">
         <SessionProvider session={session}>
-          <SmoothScroll>
-            {children}
-            <FloatingAIChat />
-            <Toaster position="top-right" richColors theme="dark" />
-          </SmoothScroll>
+          {children}
+          <FloatingAIChat />
+          <Toaster position="top-right" richColors theme="dark" />
         </SessionProvider>
       </body>
     </html>

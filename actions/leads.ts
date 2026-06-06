@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth";
 import { getUserWorkspaceId } from "@/lib/auth-utils";
 import { ACTION_TYPES } from "@/lib/constants";
 import { logActivity } from "./activity";
-import { trackUsage } from "./automation";
+import { trackUsage, runLeadAutomation } from "./automation";
 
 export async function createLead(input: any) {
   try {
@@ -45,7 +45,19 @@ export async function createLead(input: any) {
       description: `Lead "${lead.name}" created from ${validatedData.source}`,
     });
 
-    return { success: true, lead };
+    // Run AI Lead Intelligence and Automation Engine
+    try {
+      await runLeadAutomation(lead.id);
+    } catch (autoErr) {
+      console.error("Automation error during lead creation:", autoErr);
+    }
+
+    // Refetch the lead with its newly generated intelligence fields
+    const enrichedLead = await db.lead.findUnique({
+      where: { id: lead.id }
+    });
+
+    return { success: true, lead: enrichedLead || lead };
   } catch (error: any) {
     console.error("Error creating lead:", error);
     return { success: false, error: error.message };

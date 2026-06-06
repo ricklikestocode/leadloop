@@ -105,11 +105,29 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchData()
     checkStreak()
-    const interval = setInterval(fetchData, 10000)
-    const streakInterval = setInterval(checkStreak, 60000)
+    let scrollTimeout: NodeJS.Timeout | null = null
+    let isScrolling = false
+    
+    const handleScroll = () => {
+      isScrolling = true
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(() => { isScrolling = false }, 2000)
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    
+    const interval = setInterval(() => {
+      if (!isScrolling) fetchData()
+    }, 10000)
+    const streakInterval = setInterval(() => {
+      if (!isScrolling) checkStreak()
+    }, 60000)
+    
     return () => {
       clearInterval(interval)
       clearInterval(streakInterval)
+      window.removeEventListener('scroll', handleScroll)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
     }
   }, [fetchData, checkStreak])
 

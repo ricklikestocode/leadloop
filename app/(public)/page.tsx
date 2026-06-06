@@ -14,18 +14,14 @@ import { cn } from "@/lib/utils"
 import { useRef, useState, useEffect } from "react"
 
 function ParallaxText({ children, baseVelocity = 5 }: { children: string; baseVelocity?: number }) {
-  const { scrollY } = useScroll()
-  const scrollVelocity = useSpring(scrollY, { stiffness: 400, damping: 30 })
-  const x = useTransform(scrollVelocity, [0, 1000], [0, baseVelocity * 100])
-
   return (
     <div className="overflow-hidden flex flex-nowrap whitespace-nowrap">
-      <motion.div style={{ x }} className="flex flex-nowrap whitespace-nowrap">
+      <div className="flex flex-nowrap whitespace-nowrap">
         <span className="block mr-12">{children}</span>
         <span className="block mr-12">{children}</span>
         <span className="block mr-12">{children}</span>
         <span className="block mr-12">{children}</span>
-      </motion.div>
+      </div>
     </div>
   )
 }
@@ -49,7 +45,7 @@ function ScrollReveal({ children, delay = 0, direction = "up", distance = 40 }: 
         x: 0, 
         y: 0
       }}
-      viewport={{ once: true, margin: "200px" }}
+      viewport={{ once: true, margin: "50px" }}
       transition={{ 
         duration: 0.2, 
         delay, 
@@ -62,30 +58,10 @@ function ScrollReveal({ children, delay = 0, direction = "up", distance = 40 }: 
 }
 
 function MagneticButton({ children, className }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-
-  const handleMouse = (e: React.MouseEvent) => {
-    const { clientX, clientY } = e
-    const { left, top, width, height } = ref.current!.getBoundingClientRect()
-    const x = clientX - (left + width / 2)
-    const y = clientY - (top + height / 2)
-    setPosition({ x: x * 0.3, y: y * 0.3 })
-  }
-
-  const reset = () => setPosition({ x: 0, y: 0 })
-
   return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouse}
-      onMouseLeave={reset}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-      className={className}
-    >
+    <div className={className}>
       {children}
-    </motion.div>
+    </div>
   )
 }
 
@@ -242,6 +218,7 @@ function InteractiveCalculator() {
 
 function AIScoringSimulation() {
   const [activeLead, setActiveLead] = useState(0)
+  const [isScrolling, setIsScrolling] = useState(false)
   const leads = [
     { name: "TechFlow Solutions", intent: "High", scoring: 98, status: "Urgent", query: "Need pricing for 50 seats ASAP.", metrics: "4/5 high-intent keywords detected" },
     { name: "Acme Retail", intent: "Medium", scoring: 64, status: "Evaluating", query: "Do you support Shopify?", metrics: "Integration query matches knowledge base" },
@@ -250,10 +227,25 @@ function AIScoringSimulation() {
   ]
 
   useEffect(() => {
+    if (isScrolling) return
     const timer = setInterval(() => {
       setActiveLead((prev) => (prev + 1) % leads.length)
     }, 4000)
     return () => clearInterval(timer)
+  }, [isScrolling])
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null
+    const handleScroll = () => {
+      setIsScrolling(true)
+      if (timeout) clearTimeout(timeout)
+      timeout = setTimeout(() => setIsScrolling(false), 1500)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (timeout) clearTimeout(timeout)
+    }
   }, [])
 
   return (
@@ -462,25 +454,15 @@ export default function LandingPage() {
   const orbXInverse = useTransform(orbX, v => -v)
   const orbYInverse = useTransform(orbY, v => -v)
 
-  const { scrollYProgress } = useScroll()
-  const { scrollYProgress: heroScroll } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-    layoutEffect: false
-  })
-
-  const heroY = useTransform(heroScroll, [0, 1], [0, 200])
-  const heroOpacity = useTransform(heroScroll, [0, 0.5], [1, 0])
-  const scaleYourX = useTransform(heroScroll, [0, 1], [0, -100])
-  const revenueX = useTransform(heroScroll, [0, 1], [0, 100])
-  const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 })
+  // Removed scroll tracking to fix scroll lag
+  const scaleX = 1 // Fixed value instead of useSpring(scrollYProgress, ...)
 
 
   return (
     <div ref={containerRef} className="relative bg-[#020202] text-white selection:bg-[#638de9]/30 font-sans overflow-x-hidden">
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-[#638de9] origin-left z-[110] shadow-[0_0_20px_rgba(99,141,233,0.5)]"
-        style={{ scaleX }}
+        style={{ scaleX: 0.3 }}
       />
 
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
@@ -497,7 +479,7 @@ export default function LandingPage() {
 
       <section ref={heroRef} className="relative min-h-[120vh] flex flex-col items-center justify-center px-6 pt-20">
         <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
+          style={{ opacity: 1 }}
           className="max-w-6xl mx-auto text-center z-10"
           initial={{ opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
@@ -514,13 +496,13 @@ export default function LandingPage() {
 
           <h1 className="text-6xl md:text-[8.5rem] font-black tracking-tighter leading-[0.8] mb-12">
             <motion.div
-              style={{ x: scaleYourX }}
+              style={{ x: 0 }}
             >
               Scale Your
             </motion.div>
             <motion.div 
               className="relative text-[#638de9]"
-              style={{ x: revenueX }}
+              style={{ x: 0 }}
             >
               Revenue.
               <motion.svg

@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
 
     let workspaceUser = null;
     let workspace = null;
+    let databaseLeads: any[] = [];
+    let pendingFollowUps: any[] = [];
 
     if (session?.user?.id) {
       // Fetch workspace context for logged-in users
@@ -38,11 +40,7 @@ export async function POST(request: NextRequest) {
         include: {
           workspace: {
             include: {
-              settings: true,
-              leads: {
-                take: 5,
-                orderBy: { updatedAt: "desc" }
-              }
+              settings: true
             }
           }
         }
@@ -50,12 +48,45 @@ export async function POST(request: NextRequest) {
       
       if (workspaceUser) {
         workspace = workspaceUser.workspace;
+        
+        // Fetch ALL leads and pending followups for AI Sales Copilot context
+        const [leads, followUps] = await Promise.all([
+          db.lead.findMany({
+            where: { workspaceId: workspace.id },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              company: true,
+              status: true,
+              leadScore: true,
+              intent: true,
+              conversionProbability: true,
+              value: true,
+              nextAction: true,
+              followUpDate: true
+            }
+          }),
+          db.followUp.findMany({
+            where: {
+              lead: { workspaceId: workspace.id },
+              status: "PENDING"
+            },
+            include: {
+              lead: {
+                select: { name: true }
+              }
+            }
+          })
+        ]);
+        databaseLeads = leads;
+        pendingFollowUps = followUps;
       }
     }
 
     const settings = workspace?.settings;
 
-    // Call Internal Assistant service
+    // Call Internal Assistant service with real database context
     const result = await generateAssistantReply(userMessage, {
       context: {
         businessName: (settings as any)?.businessName || undefined,
@@ -81,11 +112,15 @@ export async function POST(request: NextRequest) {
           plan: "ANONYMOUS",
           stats: { messages: 0, leads: 0, aiCalls: 0 }
         },
-        recentLeads: workspace?.leads.map(l => ({
+        recentLeads: databaseLeads.slice(0, 5).map(l => ({
           name: l.name,
           status: l.status,
           company: l.company
-        })) || []
+        })),
+        databaseData: {
+          leads: databaseLeads,
+          followUps: pendingFollowUps
+        }
       }
     });
 

@@ -117,6 +117,14 @@ model Lead {
   leadNotes     LeadNote[]
   followUps     FollowUp[]
   conversations Conversation[]
+
+  // Lead Intelligence and Automation fields
+  intent                 String?   // HOT, WARM, COLD, LOST
+  confidenceScore        Float?
+  conversionProbability  Float?
+  aiSummary              String?
+  suggestedActions       String?   // JSON array of actions
+  automationRun          Boolean   @default(false)
 }
 
 model LeadNote {

@@ -147,3 +147,318 @@ export async function trackUsage(workspaceId: string, type: 'message' | 'ai' | '
     return { success: false };
   }
 }
+
+/**
+ * Runs the complete internal automation engine workflow for a lead.
+ * Workflow: Analyzes -> Scores -> Classifies -> Tasks -> Suggested Actions -> Reminders -> Progress.
+ */
+export async function runLeadAutomation(leadId: string) {
+  try {
+    const session = await getSession();
+    if (!session?.user) throw new Error("Unauthorized");
+
+    const workspaceId = await getUserWorkspaceId(session.user.id as string);
+    if (!workspaceId) throw new Error("No workspace found");
+
+    // Fetch lead, notes, and messages
+    const lead = await db.lead.findUnique({
+      where: { id: leadId },
+      include: {
+        leadNotes: { orderBy: { createdAt: "desc" } },
+        conversations: {
+          include: {
+            messages: { orderBy: { createdAt: "asc" } }
+          }
+        }
+      }
+    });
+
+    if (!lead || lead.workspaceId !== workspaceId) {
+      throw new Error("Lead not found or unauthorized");
+    }
+
+    // Get workspace settings
+    const settings = await db.workspaceSettings.findUnique({
+      where: { workspaceId }
+    });
+
+    // Gather conversation messages
+    const messages = lead.conversations.flatMap(c => c.messages);
+
+    // Call AI Lead Intelligence analyzer
+    const { analyzeLeadIntelligence } = await import("@/lib/ai");
+    const analysis = await analyzeLeadIntelligence(lead, settings, lead.leadNotes, messages);
+
+    if (!analysis.success) {
+      throw new Error("Lead analysis failed");
+    }
+
+    // Save back to Lead database
+    const updatedLead = await db.lead.update({
+      where: { id: leadId },
+      data: {
+        leadScore: analysis.leadScore,
+        intent: analysis.intent,
+        confidenceScore: analysis.confidenceScore,
+        conversionProbability: analysis.conversionProbability,
+        summary: analysis.summary,
+        aiSummary: analysis.summary,
+        nextAction: analysis.nextAction,
+        suggestedActions: JSON.stringify(analysis.suggestedActions),
+        automationRun: true
+      }
+    });
+
+    // Create follow-up task if recommended
+    let createdTask = null;
+    if (analysis.shouldCreateTask && analysis.taskTitle) {
+      const dueDate = new Date();
+      dueDate.setDate(dueDate.getDate() + (analysis.taskDueDays || 1));
+      
+      createdTask = await db.followUp.create({
+        data: {
+          dueDate,
+          status: "PENDING",
+          leadId,
+          userId: session.user.id as string
+        }
+      });
+
+      // Update lead follow-up date
+      await db.lead.update({
+        where: { id: leadId },
+        data: { followUpDate: dueDate }
+      });
+    }
+
+    // Create reminder/notification if recommended or if lead is HOT
+    let createdReminder = null;
+    if (analysis.shouldCreateReminder || analysis.intent === "HOT") {
+      const reminderText = analysis.reminderText || `Hot Lead "${lead.name}" requires contact!`;
+      createdReminder = await db.notification.create({
+        data: {
+          workspaceId,
+          userId: session.user.id as string,
+          type: "REMINDER",
+          title: `CRM Reminder: ${lead.name}`,
+          message: reminderText,
+          actionUrl: `/dashboard/leads?id=${leadId}`,
+          read: false
+        }
+      });
+    }
+
+    // Track AI Call Usage
+    await trackUsage(workspaceId, 'ai');
+
+    // Create Activity Log
+    await db.activityLog.create({
+      data: {
+        workspaceId,
+        leadId,
+        userId: session.user.id as string,
+        actionType: "AUTOMATION_RUN",
+        description: `Lead Automation completed for "${lead.name}". Score: ${analysis.leadScore}, Intent: ${analysis.intent}.`
+      }
+    });
+
+    return {
+      success: true,
+      lead: updatedLead,
+      task: createdTask,
+      reminder: createdReminder,
+      analysis
+    };
+
+  } catch (error: any) {
+    console.error("Error running lead automation:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Generate contextual follow-up message for the UI
+ */
+export async function generateLeadFollowUpMessage(leadId: string) {
+  try {
+    const session = await getSession();
+    if (!session?.user) throw new Error("Unauthorized");
+
+    const workspaceId = await getUserWorkspaceId(session.user.id as string);
+    if (!workspaceId) throw new Error("No workspace found");
+
+    const lead = await db.lead.findUnique({
+      where: { id: leadId },
+      include: {
+        leadNotes: { orderBy: { createdAt: "desc" } },
+        conversations: {
+          include: {
+            messages: { orderBy: { createdAt: "asc" } }
+          }
+        }
+      }
+    });
+
+    if (!lead || lead.workspaceId !== workspaceId) {
+      throw new Error("Lead not found");
+    }
+
+    const settings = await db.workspaceSettings.findUnique({
+      where: { workspaceId }
+    });
+
+    const messages = lead.conversations.flatMap(c => c.messages);
+
+    const { generateContextualFollowUp } = await import("@/lib/ai");
+    const result = await generateContextualFollowUp(lead, settings, lead.leadNotes, messages);
+
+    if (!result.success) throw new Error("Follow-up generation failed");
+
+    // Ensure lead has a conversation to hold the suggested message
+    let conversation: any = lead.conversations[0];
+    if (!conversation) {
+      conversation = await db.conversation.create({
+        data: {
+          leadId,
+          workspaceId,
+          title: `Chat with ${lead.name}`,
+          status: "OPEN",
+          messageSource: "MANUAL"
+        }
+      });
+    }
+
+    // Save to database as a SUGGESTED conversation message
+    const suggestedMsg = await db.conversationMessage.create({
+      data: {
+        conversationId: conversation.id,
+        content: result.followUpMessage,
+        senderType: "AI",
+        status: "SUGGESTED",
+        detectedIntent: lead.intent || "WARM"
+      }
+    });
+
+    // Also update lead's nextAction or notes
+    await db.leadNote.create({
+      data: {
+        leadId,
+        content: `[AI Generated Follow-up]: "${result.followUpMessage}"`,
+        userId: session.user.id as string
+      }
+    });
+
+    // Track AI usage
+    await trackUsage(workspaceId, 'ai');
+
+    return {
+      success: true,
+      followUpMessage: result.followUpMessage,
+      reasoning: result.reasoning,
+      messageId: suggestedMsg.id
+    };
+
+  } catch (error: any) {
+    console.error("Error generating lead follow-up:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Fetch stats and lists for the Automation Center Dashboard
+ */
+export async function getAutomationStats() {
+  try {
+    const session = await getSession();
+    if (!session?.user) throw new Error("Unauthorized");
+
+    const workspaceId = await getUserWorkspaceId(session.user.id as string);
+    if (!workspaceId) throw new Error("No workspace found");
+
+    const [
+      leadsAnalyzed,
+      followUpsGenerated,
+      tasksCreated,
+      remindersPending,
+      automationRuns,
+      workspace
+    ] = await Promise.all([
+      db.lead.count({
+        where: { workspaceId, automationRun: true }
+      }),
+      db.conversationMessage.count({
+        where: {
+          conversation: { workspaceId },
+          status: "SUGGESTED"
+        }
+      }),
+      db.followUp.count({
+        where: {
+          lead: { workspaceId }
+        }
+      }),
+      db.notification.count({
+        where: {
+          workspaceId,
+          read: false,
+          type: "REMINDER"
+        }
+      }),
+      db.activityLog.count({
+        where: {
+          workspaceId,
+          actionType: "AUTOMATION_RUN"
+        }
+      }),
+      db.workspace.findUnique({
+        where: { id: workspaceId },
+        select: { aiCallCount: true }
+      })
+    ]);
+
+    // Fetch recent automation activities
+    const recentActivities = await db.activityLog.findMany({
+      where: {
+        workspaceId,
+        actionType: "AUTOMATION_RUN"
+      },
+      orderBy: { createdAt: "desc" },
+      take: 6
+    });
+
+    // Fetch leads needing attention (HOT but no follow up scheduled)
+    const hotLeadsNeedingAttention = await db.lead.findMany({
+      where: {
+        workspaceId,
+        intent: "HOT",
+        followUps: {
+          none: { status: "PENDING" }
+        }
+      },
+      select: {
+        id: true,
+        name: true,
+        leadScore: true,
+        value: true
+      },
+      take: 5
+    });
+
+    return {
+      success: true,
+      stats: {
+        leadsAnalyzed,
+        followUpsGenerated,
+        tasksCreated,
+        remindersPending,
+        automationRuns,
+        aiActionsCompleted: workspace?.aiCallCount || 0
+      },
+      recentActivities,
+      hotLeadsNeedingAttention
+    };
+  } catch (error: any) {
+    console.error("Error getting automation stats:", error);
+    return { success: false, error: error.message };
+  }
+}

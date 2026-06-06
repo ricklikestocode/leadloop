@@ -125,68 +125,25 @@ export async function getCachedInsights() {
 
 export async function generateLeadIntelligence(leadId: string) {
   try {
-    const session = await getSession();
-    if (!session?.user?.id) throw new Error("Unauthorized");
-
-    const lead = await db.lead.findUnique({
-      where: { id: leadId },
-      include: {
-        conversations: {
-          include: {
-            messages: {
-              orderBy: { createdAt: "asc" },
-            },
-          },
-        },
-      },
-    });
-
-    if (!lead) throw new Error("Lead not found");
-
-    const allMessages = lead.conversations.flatMap(c => c.messages);
-    const messageTranscript = allMessages.map(m => `${m.senderType}: ${m.content}`).join("\n");
-
-    const prompt = `
-      Analyze this lead's conversation history and provide:
-      1. A brief summary (max 20 words)
-      2. A suggested next action (max 10 words)
-      3. A lead score from 0-100 based on interest and intent
-      
-      CONVERSATION:
-      ${messageTranscript}
-      
-      Response format: JSON object with keys: summary, nextAction, score
-    `;
-
-    const aiResponse = await generateAIReply(prompt, {
-      context: {
-        leadName: lead.name,
-        businessTone: "PROFESSIONAL",
-      },
-      maxTokens: 300,
-    });
-
-    if (aiResponse.success && aiResponse.message) {
-      try {
-        const cleanedMessage = aiResponse.message.replace(/```json|```/g, "").trim();
-        const data = JSON.parse(cleanedMessage);
-        
-        await db.lead.update({
-          where: { id: leadId },
-          data: {
-            summary: data.summary,
-            nextAction: data.nextAction,
-            leadScore: parseInt(data.score) || 0,
-          },
-        });
-
-        return { success: true, data };
-      } catch (parseError) {
-        throw new Error("Failed to parse AI response");
-      }
+    const { runLeadAutomation } = await import("./automation");
+    const result = await runLeadAutomation(leadId);
+    
+    if (result.success && result.lead) {
+      return { 
+        success: true, 
+        data: {
+          summary: result.lead.summary,
+          nextAction: result.lead.nextAction,
+          score: result.lead.leadScore,
+          intent: result.lead.intent,
+          confidenceScore: result.lead.confidenceScore,
+          conversionProbability: result.lead.conversionProbability,
+          suggestedActions: result.lead.suggestedActions,
+          automationRun: result.lead.automationRun
+        } 
+      };
     }
-
-    return { success: false, error: aiResponse.error };
+    return { success: false, error: result.error || "Failed to analyze lead" };
   } catch (error: any) {
     console.error("Error generating lead intelligence:", error);
     return { success: false, error: error.message };

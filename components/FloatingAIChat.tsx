@@ -51,7 +51,7 @@ export function FloatingAIChat() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
   };
 
   useEffect(() => {
@@ -166,7 +166,7 @@ export function FloatingAIChat() {
         </AnimatePresence>
 
         {!isOpen && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background animate-pulse" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background" />
         )}
       </motion.button>
 
@@ -174,10 +174,10 @@ export function FloatingAIChat() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20, filter: "blur(10px)" }}
+            initial={{ opacity: 0, scale: 0.95, y: 20, filter: "blur(0px)" }}
             animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 0.95, y: 20, filter: "blur(10px)" }}
-            className="fixed bottom-28 right-8 w-[420px] max-w-[calc(100vw-32px)] h-[600px] max-h-[calc(100vh-140px)] flex flex-col z-[100] rounded-3xl overflow-hidden border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-xl bg-slate-900/90"
+            exit={{ opacity: 0, scale: 0.95, y: 20, filter: "blur(0px)" }}
+            className="fixed bottom-28 right-8 w-[420px] max-w-[calc(100vw-32px)] h-[600px] max-h-[calc(100vh-140px)] flex flex-col z-[100] rounded-3xl overflow-hidden border border-white/10 bg-slate-900/90 shadow-2xl shadow-black/40"
           >
             {/* Header */}
             <div className="p-5 bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 border-b border-white/5 flex items-center justify-between shrink-0">

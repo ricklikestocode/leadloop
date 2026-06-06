@@ -10,13 +10,6 @@ import { useState, useEffect } from "react"
 export function Navbar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 50)
-    window.addEventListener("scroll", handler, { passive: true })
-    return () => window.removeEventListener("scroll", handler)
-  }, [])
 
   const navItems = [
     { href: "#features", label: "Features" },
@@ -30,7 +23,7 @@ export function Navbar() {
       e.preventDefault()
       const element = document.querySelector(href)
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" })
+        element.scrollIntoView({ behavior: "instant" })
       }
       setIsOpen(false)
     }
@@ -38,9 +31,7 @@ export function Navbar() {
 
   return (
     <motion.nav
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
-        scrolled ? "bg-black/80 backdrop-blur-md border-b border-white/[0.05] py-4" : "bg-transparent py-6"
-      }`}
+      className="fixed top-0 left-0 right-0 z-[100] transition-all duration-500 bg-black/80 backdrop-blur-md border-b border-white/[0.05] py-4"
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
