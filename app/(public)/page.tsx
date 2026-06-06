@@ -464,15 +464,19 @@ export default function LandingPage() {
   const orbXInverse = useTransform(orbX, v => -v)
   const orbYInverse = useTransform(orbY, v => -v)
 
-  // Removed scroll tracking to fix scroll lag
-  const scaleX = 1 // Fixed value instead of useSpring(scrollYProgress, ...)
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  })
 
 
   return (
     <div ref={containerRef} className="relative bg-[#020202] text-white selection:bg-[#638de9]/30 font-sans overflow-x-hidden">
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-[#638de9] origin-left z-[110] shadow-[0_0_20px_rgba(99,141,233,0.5)]"
-        style={{ scaleX: 0.3 }}
+        style={{ scaleX }}
       />
 
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
